@@ -1,0 +1,22 @@
+[
+	{
+		"Language":
+		{
+			"Name": "en"
+		},
+		"Sequence":
+		[
+			{
+				"Name": "test",
+				"Dialogue":
+				[
+					{
+						"Name": "en_test_01",
+						"Subtitle": "the cake. is a lie",
+						"Guid": null
+					}
+				]
+			}
+		]
+	}
+]

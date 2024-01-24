@@ -1,17 +1,14 @@
-﻿using System.Diagnostics;
-using System.IO;
-using System.Net.Http;
-using System.Threading.Tasks;
-
-namespace GTE
+﻿namespace GTE
 {
-	// Interface
-	public static partial class Google
+	public static class Google
 	{
 		public static int Downloads { get; private set; }
 		public static long WaitTime { get; private set; }
 
-		public static void Download(Sequence sequence, Locale locale)
+        static readonly HttpClient Client = new HttpClient();
+        static readonly Stopwatch Stopwatch = new Stopwatch();
+
+        public static void Download(Sequence sequence, Locale locale)
 		{
 			Google.Downloads += 1;
 
@@ -41,28 +38,21 @@ namespace GTE
 
 			Google.Downloads -= 1;
 		}
-	}
 
-	// Internal
-	public static partial class Google
-	{
-		static readonly HttpClient client = new HttpClient();
-		static readonly Stopwatch stopwatch = new Stopwatch();
+        /// <summary>
+        /// Send a file request to the specified url.
+        /// </summary>
+        static async Task<Stream> Request(string url)
+        {
+            Stopwatch.Start();
 
-		/// <summary>
-		/// Send a file request to the specified url.
-		/// </summary>
-		static async Task<Stream> Request(string url)
-		{
-			stopwatch.Start();
+            HttpResponseMessage response = await Client.GetAsync(url);
+            Stream stream = await response.Content.ReadAsStreamAsync();
 
-			HttpResponseMessage response = await client.GetAsync(url);
-			Stream stream = await response.Content.ReadAsStreamAsync();
+            WaitTime += Stopwatch.ElapsedMilliseconds;
+            Stopwatch.Reset();
 
-			WaitTime += stopwatch.ElapsedMilliseconds;
-			stopwatch.Reset();
-
-			return stream;
-		}
-	}
+            return stream;
+        }
+    }
 }

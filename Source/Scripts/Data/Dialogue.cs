@@ -1,9 +1,9 @@
 ﻿namespace GTE
 {
-	public struct Dialogue
+	public struct Dialogue(string name, string subtitle)
 	{
-		public string Name { get; set; }
-		public string Subtitle { get; set; }
-		public string? Guid { get; set; }
+		public string Name { get; set; } = name;
+		public string Subtitle { get; set; } = subtitle;
+		public string Guid { get; set; } = "";
 	}
 }

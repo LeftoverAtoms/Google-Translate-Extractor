@@ -1,134 +1,123 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
 namespace GTE
 {
-	// Interface
-	public static partial class GitGuid
-	{
-		public static bool Initialize(string path)
-		{
-			string[]? files = null;
+    public static class GitGuid
+    {
+        const string GUID = "guid";
 
-			// Retrieve all meta files in path.
-			if (Directory.Exists(path))
-			{
-				files = Directory.GetFiles(path, "*.meta", SearchOption.AllDirectories);
-			}
+        static readonly List<string> collection = [];
+        static int Writes;
 
-			// Failed.
-			if (files == null || files.Length == 0)
-			{
-				Console.CursorTop -= 1;
-				Log.Warning($"Failed to find any meta files at '{path}'!");
-				return false;
-			}
+        public static bool Init(string path)
+        {
+            string[]? files = null;
 
-			Log.Info($"Found {files.Length} meta files at '{path}'!\n");
+            // Retrieve all meta files in path.
+            if (Directory.Exists(path))
+            {
+                files = Directory.GetFiles(path, "*.meta", SearchOption.AllDirectories);
+            }
 
-			// Initialize a buffer to write to while reading through each file stream.
-			char[] buffer = new char[48]; // Minimum requirement is 38 characters, but I recommended to add some leeway.
+            // Failed.
+            if (files == null || files.Length == 0)
+            {
+                Console.CursorTop -= 1;
+                Log.Warning($"Failed to find any meta files at '{path}'!");
+                return false;
+            }
 
-			foreach (string file in files)
-			{
-				Parse(file, buffer);
-			}
+            Log.Info($"Found {files.Length} meta files at '{path}'!\n");
 
-			return true;
-		}
-		public static string Generate()
-		{
-			// Regenerate until the guid is unique.
-			while (true)
-			{
-				string guid = Guid.NewGuid().ToString("N");
+            // Initialize a buffer to write to while reading through each file stream.
+            char[] buffer = new char[48]; // Minimum requirement is 38 characters, but I recommended to add some leeway.
 
-				// Guid is a duplicate.
-				if (collection.Contains(guid))
-				{
-					Console.WriteLine("Duplicate Guid, regenerating...");
-					continue;
-				}
+            foreach (string file in files)
+            {
+                Parse(file, buffer);
+            }
 
-				collection.Add(guid);
-				return guid;
-			}
-		}
-	}
+            return true;
+        }
+        public static string Generate()
+        {
+            // Regenerate until the guid is unique.
+            while (true)
+            {
+                string guid = Guid.NewGuid().ToString("N");
 
-	// Internal
-	public static partial class GitGuid
-	{
-		const string GUID = "guid";
+                // Guid is a duplicate.
+                if (collection.Contains(guid))
+                {
+                    Console.WriteLine("Duplicate Guid, regenerating...");
+                    continue;
+                }
 
-		static readonly List<string> collection = new List<string>();
+                collection.Add(guid);
+                return guid;
+            }
+        }
 
-		static int writes;
+        static void Parse(string file, char[] buffer)
+        {
+            using (FileStream stream = new FileStream(file, FileMode.Open, FileAccess.Read))
+            using (StreamReader reader = new StreamReader(stream))
+            {
+                int lineCount = reader.ReadToEnd().Count(x => x == '\n');
+                stream.Position = 0; // Reset after reading through the entire stream.
 
-		static void Parse(string file, char[] buffer)
-		{
-			using (FileStream stream = new FileStream(file, FileMode.Open, FileAccess.Read))
-			using (StreamReader reader = new StreamReader(stream))
-			{
-				int lineCount = reader.ReadToEnd().Count(x => x == '\n');
-				stream.Position = 0; // Reset after reading through the entire stream.
+                for (int i = 0; i < lineCount; i++)
+                {
+                    string? line = reader.ReadLine();
+                    if (line == null)
+                    {
+                        Console.WriteLine("BAD");
+                        continue;
+                    }
 
-				for (int i = 0; i < lineCount; i++)
-				{
-					string? line = reader.ReadLine();
-					if (line == null)
-					{
-						Console.WriteLine("BAD");
-						continue;
-					}
+                    foreach (char character in line)
+                    {
+                        // Ignore special characters.
+                        if (char.IsLetterOrDigit(character))
+                        {
+                            continue;
+                        }
 
-					foreach (char character in line)
-					{
-						// Ignore special characters.
-						if (char.IsLetterOrDigit(character))
-						{
-							continue;
-						}
+                        // Write character to buffer.
+                        buffer[Writes++] = character;
 
-						// Write character to buffer.
-						buffer[writes++] = character;
+                        // Check if variable name is a guid.
+                        if (Writes == GUID.Length)
+                        {
+                            string str = BuildString(buffer);
 
-						// Check if variable name is a guid.
-						if (writes == GUID.Length)
-						{
-							string str = BuildString(buffer);
+                            // Not a guid, check next line.
+                            if (str != GUID)
+                            {
+                                break;
+                            }
+                        }
+                        // Must be the value of a guid.
+                        else if (Writes == 32)
+                        {
+                            string str = BuildString(buffer);
 
-							// Not a guid, check next line.
-							if (str != GUID)
-							{
-								break;
-							}
-						}
-						// Must be the value of a guid.
-						else if (writes == 32)
-						{
-							string str = BuildString(buffer);
+                            // Ignore duplicate guids.
+                            if (!collection.Contains(str))
+                            {
+                                collection.Add(str);
+                            }
 
-							// Ignore duplicate guids.
-							if (!collection.Contains(str))
-							{
-								collection.Add(str);
-							}
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        static string BuildString(char[] buffer)
+        {
+            string str = new string(buffer, 0, Writes);
+            Writes = 0;
 
-							break;
-						}
-					}
-				}
-			}
-		}
-		static string BuildString(char[] buffer)
-		{
-			string str = new string(buffer, 0, writes);
-			writes = 0;
-
-			return str;
-		}
-	}
+            return str;
+        }
+    }
 }

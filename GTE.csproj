@@ -13,7 +13,7 @@
     <Trimming>full</Trimming>
     <Title>$(AssemblyName)</Title>
     <Company>Adam Calvelage</Company>
-    <Version>2.0.0.3</Version>
+    <Version>2.1.0.0</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Source/Assets/.ico" />
+    <None Remove="Source\Assets/.ico" />
     <None Remove=".gitattributes" />
     <None Remove=".gitignore" />
     <None Remove="LICENSE" />
@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Source/Config.json">
+    <None Update="Source\Config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

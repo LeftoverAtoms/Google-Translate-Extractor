@@ -1,39 +1,27 @@
-﻿using System;
-
-namespace GTE
+﻿namespace GTE
 {
-	// Interface
-	public static partial class Log
+	public static class Log
 	{
-		public static void Info(object message, bool pause = false)
+		public static void Info(object message, ConsoleColor color = ConsoleColor.White)
 		{
-			Console.Write(message + "\n");
-
-			if (pause)
-			{
-				Console.Read();
-				Console.Write('\b');
-			}
+			Console.ForegroundColor = color;
+			Console.Write($"{message}\n");
 		}
-		public static void Warning(object message, bool pause = false)
+		public static void Warning(object message)
 		{
-			Console.Write("Warning: " + message + '\n');
-
-			if (pause)
-			{
-				Console.Read();
-				Console.Write('\b');
-			}
+			Console.ForegroundColor = ConsoleColor.Yellow;
+			Console.Write($"Warning: {message}\n");
 		}
-		public static void Error(object message, bool pause = false)
+		public static void Error(object message)
 		{
-			Console.Write("Error: " + message + '\n');
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.Write($"Error: {message}\n");
+		}
 
-			if (pause)
-			{
-				Console.Read();
-				Console.Write('\b');
-			}
+		public static void Pause()
+		{
+			Console.Read();
+			Console.Write('\b');
 		}
 	}
 }

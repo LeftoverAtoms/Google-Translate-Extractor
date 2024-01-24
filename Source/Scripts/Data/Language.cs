@@ -1,21 +1,16 @@
 ﻿namespace GTE
 {
-	// Interface
-	public partial struct Language
+	public struct Language(string name)
 	{
-		public string Name { get; set; }
+		static string[] ValidCodes => ["en", "fr", "es"];
 
-		public int GetID()
+		public string Name { get; set; } = name;
+
+		public readonly int GetID()
 		{
 			string name = Name; // Lambda expressions cannot access instance members. 
-			int id = System.Array.FindIndex(validCodes, x => (x == name));
+			int id = Array.FindIndex(ValidCodes, x => (x == name));
 			return id;
 		}
-	}
-
-	// Internal
-	public partial struct Language
-	{
-		static readonly string[] validCodes = ["en", "fr", "es"];
 	}
 }

@@ -8,7 +8,7 @@
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
     <StartupObject>GTE.Program</StartupObject>
-    <ApplicationIcon>.ico</ApplicationIcon>
+    <ApplicationIcon>Source\Assets\.ico</ApplicationIcon>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <Trimming>full</Trimming>
     <Title>$(AssemblyName)</Title>
@@ -23,15 +23,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Source/Assets/.ico" />
     <None Remove=".gitattributes" />
     <None Remove=".gitignore" />
-    <None Remove=".ico" />
     <None Remove="LICENSE" />
     <None Remove="README.md" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Config.json">
+    <Content Include="Source\Assets\.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Source/Config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

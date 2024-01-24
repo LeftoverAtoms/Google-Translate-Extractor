@@ -20,7 +20,10 @@ namespace GTE
 			foreach (Dialogue dialogue in sequence.Dialogue)
 			{
 				string? url = URL.Format(dialogue.Subtitle, locale.Language.Name);
-				if (url == null) { return; }
+				if (url == null)
+				{
+					return;
+				}
 
 				// Request to download dialogue audio.
 				Task<Stream> task = Task.Run(async () => await Google.Request(url));

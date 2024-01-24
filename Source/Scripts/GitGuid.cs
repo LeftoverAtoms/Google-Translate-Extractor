@@ -12,24 +12,24 @@ namespace GTE
 		{
 			string[]? files = null;
 
-            // Retrieve all meta files in path.
-            if (Directory.Exists(path))
+			// Retrieve all meta files in path.
+			if (Directory.Exists(path))
 			{
-                files = Directory.GetFiles(path, "*.meta", SearchOption.AllDirectories);
-            }
+				files = Directory.GetFiles(path, "*.meta", SearchOption.AllDirectories);
+			}
 
 			// Failed.
-            if (files == null || files.Length == 0)
+			if (files == null || files.Length == 0)
 			{
 				Console.CursorTop -= 1;
 				Log.Warning($"Failed to find any meta files at '{path}'!");
 				return false;
 			}
 
-            Log.Info($"Found {files.Length} meta files at '{path}'!\n");
+			Log.Info($"Found {files.Length} meta files at '{path}'!\n");
 
-            // Initialize a buffer to write to while reading through each file stream.
-            char[] buffer = new char[48]; // Minimum requirement is 38 characters, but I recommended to add some leeway.
+			// Initialize a buffer to write to while reading through each file stream.
+			char[] buffer = new char[48]; // Minimum requirement is 38 characters, but I recommended to add some leeway.
 
 			foreach (string file in files)
 			{

@@ -70,7 +70,7 @@ namespace GTE
 		{
 			bool changed = false;
 
-            foreach (Locale locale in data)
+			foreach (Locale locale in data)
 			{
 				if (locale.Sequence == null)
 				{
@@ -80,13 +80,13 @@ namespace GTE
 
 				foreach (Sequence sequence in locale.Sequence)
 				{
-                    if (sequence.Dialogue == null)
-                    {
-                        Log.Error("Dialogue is null!", true);
-                        return;
-                    }
+					if (sequence.Dialogue == null)
+					{
+						Log.Error("Dialogue is null!", true);
+						return;
+					}
 
-                    for (int i = 0; i < sequence.Dialogue.Length; i++)
+					for (int i = 0; i < sequence.Dialogue.Length; i++)
 					{
 						// Validate each dialogue guid.
 						if (!Guid.TryParse(sequence.Dialogue[i].Guid, out _))

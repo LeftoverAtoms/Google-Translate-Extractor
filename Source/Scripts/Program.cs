@@ -52,8 +52,8 @@ namespace GTE
 
 				if (assetPath == null || assetPath == "")
 				{
-                    Console.CursorTop -= 1;
-                    Log.Info("Ignoring pre-existing Unity guids!\n");
+					Console.CursorTop -= 1;
+					Log.Info("Ignoring pre-existing Unity guids!\n");
 					break;
 				}
 
@@ -74,7 +74,8 @@ namespace GTE
 			}
 
 			// Wait for all downloads to complete.
-			while (Google.Downloads > 0) { continue; }
+			while (Google.Downloads > 0)
+			{ continue; }
 
 			// Wait for threads to print their messages.
 			Thread.Sleep(2000);

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Google Translate Extractor", "Google Translate Extractor.csproj", "{695FE50A-9270-40BD-8466-D4B670DFB310}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GTE", "GTE.csproj", "{695FE50A-9270-40BD-8466-D4B670DFB310}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

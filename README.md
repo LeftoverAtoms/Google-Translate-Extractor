@@ -4,11 +4,9 @@ Created to generate placeholder audio for Unity, but can be used for whatever pu
 
 ## Usage
 
-- Specifiy what you want Google Translate to output with the [config file.](Source/Config.json)
+- Specifiy what you want Google Translate to output with the [config file.](Config.json)
     - Tip: Use commas or spaces in your Subtitles to add short or long pauses between words.
-- Run the program.
-- Parse Unity GUIDs by inputing your Unity Assets path or just press enter to continue.
-- Google Translate will then generate your audio and this program will download the data.
+- Running this program will send several file requests to [Google Translate](https://translate.google.com) and will download each of your prompts to your system.
 
 ## Preview
 

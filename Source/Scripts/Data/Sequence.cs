@@ -3,7 +3,7 @@
 	public struct Sequence
 	{
 		public string Name { get; set; }
-		public Dialogue[] Dialogue { get; set; }
+		public string[] Dialogue { get; set; }
 
 		/// <summary>
 		/// Create a dialogue asset.
@@ -12,11 +12,11 @@
 		{
 			string subtitles = "";
 
-			foreach (Dialogue dialogue in sequence.Dialogue)
+			foreach (string dialogue in sequence.Dialogue)
 			{
-				string subtitle = dialogue.Subtitle.Replace(".", "").Replace(",", "");
+				string subtitle = dialogue.Replace(".", "").Replace(",", "");
 
-				subtitles += string.Format(Text.Subtitle, dialogue.Guid, subtitle);
+				subtitles += string.Format(Text.Subtitle, subtitle);
 			}
 
 			return string.Format(Text.Dialogue, sequence.Name, subtitles, language);

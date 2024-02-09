@@ -1,3 +1,4 @@
+/*
 namespace GTE
 {
     public static class GitGuid
@@ -121,3 +122,4 @@ namespace GTE
         }
     }
 }
+*/

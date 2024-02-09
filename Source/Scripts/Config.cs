@@ -16,6 +16,9 @@
 			};
 		}
 
+		/// <summary>
+		/// ...
+		/// </summary>
 		public static void Serialize(Locale[] value)
 		{
 			using (FileStream stream = new FileStream(Json, FileMode.OpenOrCreate, FileAccess.ReadWrite))
@@ -23,47 +26,54 @@
 				JsonSerializer.Serialize(stream, value, JsonOptions);
 			}
 		}
+
+		/// <summary>
+		/// ...
+		/// </summary>
 		public static void Parse(out Locale[] data)
 		{
+			Locale[]? file = null;
+
 			// Missing file.
 			if (!Path.Exists(Json))
 			{
-				Log.Error("Configuration is missing!");
-				data = WriteDefaults();
+				Log.Info("Error: Configuration is missing!", 2, ConsoleColor.Red);
+				file = WriteDefaults();
 			}
 			else
 			{
-				// Compiler was complaining.
-				data = [];
-
 				// Has a chance to throw an exception.
 				try
 				{
 					using (FileStream stream = new FileStream(Json, FileMode.Open, FileAccess.Read))
 					{
-						data = JsonSerializer.Deserialize<Locale[]>(stream, JsonOptions);
+						file = JsonSerializer.Deserialize<Locale[]>(stream, JsonOptions);
 					}
 				}
 				catch (Exception error)
 				{
-					Log.Info("--- PLEASE POST AN ISSUE WITH THIS ERROR ON GITHUB ---");
-					Log.Info(error, ConsoleColor.Red);
+					Log.Info("--- PLEASE POST AN ISSUE WITH THE ERROR BELOW ON GITHUB ---", 1, ConsoleColor.Magenta);
+					Log.Info(error, 1, ConsoleColor.Red);
+					Log.Info("--- PLEASE POST AN ISSUE WITH THE ERROR ABOVE ON GITHUB ---", 1, ConsoleColor.Magenta);
 					Log.Pause();
 				}
 			}
 
 			// Compiler was complaining.
-			if (data == null)
+			if (file == null)
 			{
-				data = WriteDefaults();
+				file = WriteDefaults();
 			}
 
-			ValidateGuid(data);
+			data = file;
 		}
 
+		/// <summary>
+		/// ...
+		/// </summary>
 		public static Locale[] WriteDefaults()
 		{
-			Log.Info("Writing defaults to working directory...\n");
+			Log.Info("Writing defaults to working directory...", 2, ConsoleColor.Yellow);
 
 			Locale[] data =
 			[
@@ -77,7 +87,8 @@
 							Name = "test",
 							Dialogue =
 							[
-								new Dialogue("en_test_01", "the cake. is a lie")
+								"the cake. is a lie",
+								"goodbye"
 							]
 						}
 					]
@@ -87,46 +98,6 @@
 			Serialize(data);
 
 			return data;
-		}
-		public static void ValidateGuid(Locale[] data)
-		{
-			bool changed = false;
-
-			foreach (Locale locale in data)
-			{
-				if (locale.Sequence == null)
-				{
-					Log.Error("Sequence is null!");
-					return;
-				}
-
-				foreach (Sequence sequence in locale.Sequence)
-				{
-					if (sequence.Dialogue == null)
-					{
-						Log.Error("Dialogue is null!");
-						Log.Pause();
-						return;
-					}
-
-					for (int i = 0; i < sequence.Dialogue.Length; i++)
-					{
-						// Validate each dialogue guid.
-						if (!Guid.TryParse(sequence.Dialogue[i].Guid, out _))
-						{
-							sequence.Dialogue[i].Guid = GitGuid.Generate();
-							changed = true;
-						}
-					}
-				}
-			}
-
-			// Changed some data so reserialize the config.
-			if (changed)
-			{
-				Log.Warning("Reserializing config with valid guids!\n");
-				Serialize(data);
-			}
 		}
 	}
 }

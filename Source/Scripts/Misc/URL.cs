@@ -2,6 +2,9 @@
 {
 	public static class URL
 	{
+		/// <summary>
+		/// ...
+		/// </summary>
 		public static string? Format(string prompt, string language)
 		{
 			if (prompt != null && language != null)

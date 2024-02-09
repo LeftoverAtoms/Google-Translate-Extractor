@@ -6,6 +6,9 @@
 
 		public string Name { get; set; } = name;
 
+		/// <summary>
+		/// ...
+		/// </summary>
 		public readonly int GetID()
 		{
 			string name = Name; // Lambda expressions cannot access instance members. 

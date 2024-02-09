@@ -13,7 +13,8 @@
     <Trimming>full</Trimming>
     <Title>$(AssemblyName)</Title>
     <Company>Adam Calvelage</Company>
-    <Version>2.1.0.0</Version>
+    <Version>2.2.0.0</Version>
+    <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -35,6 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Config.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Source\Config.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

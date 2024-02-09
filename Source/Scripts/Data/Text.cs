@@ -2,7 +2,6 @@
 {
 	public static class Text
 	{
-		public const string Intro = "Google Translate Extractor (Version {0}) by Adam Calvelage\n";
 		public const string URL = "https://translate.google.com/translate_tts?q={0}&tl={1}&client=tw-ob";
 
 		public const string Dialogue =
@@ -25,12 +24,12 @@
 			"  Language: {2}\n";
 
 		public const string Subtitle =
-			"  - Recording: {{fileID: 8300000, guid: {0}, type: 3}}\n" +
-			"    Subtitle: {1}\n";
+			"  - Recording: {{fileID: 8300000, guid: 0, type: 3}}\n" +
+			"    Subtitle: {0}\n";
 
 		public const string Sound =
 			"fileFormatVersion: 2\n" +
-			"guid: {0}\n" +
+			"guid: 0\n" +
 			"AudioImporter:\n" +
 			"  externalObjects: {{}}\n" +
 			"  serializedVersion: 6\n" +

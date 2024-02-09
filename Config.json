@@ -10,11 +10,8 @@
 				"Name": "test",
 				"Dialogue":
 				[
-					{
-						"Name": "en_test_01",
-						"Subtitle": "the cake. is a lie",
-						"Guid": null
-					}
+					"the cake. is a lie",
+					"goodbye"
 				]
 			}
 		]

@@ -2,22 +2,25 @@
 {
 	public static class Log
 	{
-		public static void Info(object message, ConsoleColor color = ConsoleColor.White)
+		/// <summary>
+		/// ...
+		/// </summary>
+		public static void Info(object message, int newlineCount, ConsoleColor color)
 		{
+			var str = message.ToString();
+
+			for (int i = 0; i < newlineCount; i++)
+			{
+				str += '\n';
+			}
+
 			Console.ForegroundColor = color;
-			Console.Write($"{message}\n");
-		}
-		public static void Warning(object message)
-		{
-			Console.ForegroundColor = ConsoleColor.Yellow;
-			Console.Write($"Warning: {message}\n");
-		}
-		public static void Error(object message)
-		{
-			Console.ForegroundColor = ConsoleColor.Red;
-			Console.Write($"Error: {message}\n");
+			Console.Write(str);
 		}
 
+		/// <summary>
+		/// ...
+		/// </summary>
 		public static void Pause()
 		{
 			Console.Read();

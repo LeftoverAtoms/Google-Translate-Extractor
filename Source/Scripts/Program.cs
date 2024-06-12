@@ -1,130 +1,112 @@
-﻿using Extensions;
-using System;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿global using System;
+global using System.Collections.Generic;
+global using System.Diagnostics;
+global using System.IO;
+global using System.Linq;
+global using System.Net.Http;
+global using System.Reflection;
+global using System.Text.Encodings.Web;
+global using System.Text.Json;
+global using System.Threading;
+global using System.Threading.Tasks;
 
 namespace GTE
 {
-    internal static class Program
+    public static class Program
     {
-        private static string AppData { get; } = Path.Combine(Directory.GetCurrentDirectory(), "Data");
-        private static string Version
+        static long BytesWritten;
+
+        /// <summary>
+        /// Write to file using a stream.
+        /// </summary>
+        public static void Write(Stream stream, string path, string extension)
         {
-            get
+            Directory.CreateDirectory(path);
+
+            using (FileStream file = new FileStream(path + extension, FileMode.Create, FileAccess.Write))
             {
-                var assembly = Assembly.GetEntryAssembly();
-                if (assembly != null)
-                {
-                    var version = assembly.GetName().Version;
-                    if (version != null)
-                    {
-                        string str = version.ToString();
-                        int end = str.LastIndexOf('.');
-                        return str.Substring(0, end);
-                    }
-                }
-                return "N/A";
+                stream.CopyTo(file);
+                Log.Info($"Wrote '{extension}' [{stream.Length} bytes]", 1, ConsoleColor.White);
             }
+
+            BytesWritten += stream.Length;
         }
 
-        private static void Main()
+        /// <summary>
+        /// Write to file using a string.
+        /// </summary>
+        public static void Write(string text, string path, string extension)
         {
-            PrintAttributes();
+            Directory.CreateDirectory(path);
 
-            foreach (var file in Directory.GetFiles(AppData, "*.json"))
+            using (FileStream file = new FileStream(path + extension, FileMode.Create, FileAccess.Write))
+            using (StreamWriter writer = new StreamWriter(file))
             {
-                JSON.Deserialize(file);
+                writer.Write(text);
+                Log.Info($"Wrote '{extension}' [{text.Length} bytes]", 1, ConsoleColor.White);
             }
 
-            // Wait until application is done processing all documents.
-            while (JSON.HasProcesses)
-            {
-            }
-            ConsoleColor.DarkYellow.WriteLine("Processed documents");
+            BytesWritten += text.Length;
+        }
 
-            // Sequence Groups:
-            foreach (var a in JSON.Data)
-            {
-                string type = a.Key;
-                var sequences = a.Value;
+        /// <summary>
+        /// Main entry point.
+        /// </summary>
+        static void Main()
+        {
+            ShowCredits();
 
-                // Sequence:
-                foreach (var b in sequences)
+            Config.Parse(out Locale[]? data);
+
+            // Download each sequence on a separate thread.
+            foreach (Locale locale in data)
+            {
+                foreach (Sequence sequence in locale.Sequence)
                 {
-                    string name = b.Key;
-                    var variants = b.Value.Variants;
-
-                    // ERROR:
-                    if (variants == null)
-                    {
-                        ConsoleColor.Red.WriteLine($"Sequence: '{name}' variants are invalid");
-                        continue;
-                    }
-
-                    // Sequence Variants:
-                    foreach (var c in variants)
-                    {
-                        string language = c.Key;
-                        string[] subtitles = c.Value;
-
-                        string path = Path.Combine("Sounds", type.ToTitleCase(), language.ToTitleCase());
-
-                        // Sequence Variant Subtitles:
-                        for (int i = 0; i < subtitles.Length; i++)
-                        {
-                            // Save iterator as it will change while the task is running.
-                            int index = i;
-
-                            // Combine path and file name.
-                            string count = (index + 1).ToString("00");
-                            string filepath = Path.Combine(path, $"{name}_{count}.mp3");
-
-                            // Download each sequence variant subtitle.
-                            Task.Run(async () =>
-                            {
-                                var stream = await Google.Request(language, subtitles[index]);
-                                if (stream != null)
-                                {
-                                    Write(stream, filepath);
-                                }
-                            });
-                        }
-                    }
+                    new Thread(new ThreadStart(() => Google.Download(sequence, locale))).Start();
                 }
             }
 
-            Console.Read();
-        }
+            // Wait for downloads to complete.
+            while (Google.Downloads > 0)
+            {
+                continue;
+            }
 
-        private static void PrintAttributes()
-        {
-            string message = $"Google Translate Extractor (Version {Version}) by Adam Calvelage";
-            ConsoleColor.DarkMagenta.WriteLine(message);
+            Thread.Sleep(2500);
             Console.WriteLine();
+
+            // Display stats.
+            if (BytesWritten > 0)
+            {
+                string time = (Google.WaitTime * 0.001f).ToString("0.00");
+                string kilobytes = (BytesWritten * 0.001f).ToString("0.0");
+
+                Log.Info($"Spent {time} seconds writing {kilobytes} KB!", 1, ConsoleColor.White);
+                Log.Pause();
+            }
+
+            // Failed!
+            else
+            {
+                Log.Info("Error: Failed to write any files!", 1, ConsoleColor.Red);
+                Log.Pause();
+            }
         }
 
-        private static async void Write(Stream stream, string filepath)
+        /// <summary>
+        /// Print attributions.
+        /// </summary>
+        static void ShowCredits()
         {
-            string? path = Path.GetDirectoryName(filepath);
-            string? name = Path.GetFileName(filepath);
+            // Application version, excluding revisions.
+            string version = Assembly.GetExecutingAssembly().GetName().Version.ToString()[2..];
 
-            if (path != null && name != null)
-            {
-                // Create missing directory.
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
+            // Format message.
+            string message = "Google Translate Extractor (Version " + version + ") by Adam Calvelage";
 
-                // Write stream to file.
-                using (var file = new FileStream(filepath, FileMode.Create, FileAccess.Write))
-                {
-                    await stream.CopyToAsync(file);
-                    await file.DisposeAsync();
-                    ConsoleColor.DarkCyan.WriteLine($"Wrote {stream.Length / 1000} KB -> '{filepath.Replace(@"Sounds\", "")}'");
-                }
-            }
+            // Print message.
+            Log.Info(message, 2, ConsoleColor.Blue);
         }
     }
 }

@@ -65,5 +65,27 @@ namespace GTE
             string message = $"Google Translate Extractor (Version {Version}) by Adam Calvelage";
             ConsoleColor.Blue.WriteLine(message);
         }
+
+        public static async void Write(Stream stream, string filepath)
+        {
+            string? path = Path.GetDirectoryName(filepath);
+            string? name = Path.GetFileName(filepath);
+
+            if (path != null && name != null)
+            {
+                // Create missing directory.
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                // Write stream to file.
+                using (var file = new FileStream(filepath, FileMode.Create, FileAccess.Write))
+                {
+                    await stream.CopyToAsync(file);
+                    ConsoleColor.DarkGreen.WriteLine($"Wrote '{name}' [{stream.Length} bytes]");
+                }
+            }
+        }
     }
 }

@@ -46,12 +46,15 @@ namespace GTE
                 ConsoleColor.Cyan.WriteLine(sequenceGroup.Key);
                 foreach (var sequence in sequenceGroup.Value)
                 {
-                    ConsoleColor.DarkCyan.WriteLine(sequence.Key);
-                    if (sequence.Value.TryGetVariant("english", out var subtitles))
+                    ConsoleColor.DarkCyan.WriteLine("  " + sequence.Key);
+                    foreach (var variants in sequence.Value.Variants)
                     {
-                        foreach (var subtitle in subtitles)
+                        var path = Path.Combine(sequenceGroup.Key.ToTitleCase(), variants.Key.ToTitleCase());
+                        Directory.CreateDirectory(path);
+                        ConsoleColor.DarkYellow.WriteLine("    " + variants.Key);
+                        foreach (var subtitle in variants.Value)
                         {
-                            ConsoleColor.Gray.WriteLine(subtitle);
+                            ConsoleColor.Gray.WriteLine("      " + subtitle);
                         }
                     }
                 }

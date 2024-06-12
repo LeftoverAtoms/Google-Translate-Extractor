@@ -13,7 +13,7 @@
     <Trimming>full</Trimming>
     <Title>$(AssemblyName)</Title>
     <Company>Adam Calvelage</Company>
-    <Version>2.2.0.0</Version>
+    <Version>3.0.0</Version>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 
@@ -24,7 +24,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Source\Assets/.ico" />
+    <Compile Remove="Source\Assets\**" />
+    <EmbeddedResource Remove="Source\Assets\**" />
+    <None Remove="Source\Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove=".gitattributes" />
     <None Remove=".gitignore" />
     <None Remove="LICENSE" />
@@ -32,14 +37,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Source\Assets\.ico" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Source\Config.json">
+    <None Update="Data\example.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

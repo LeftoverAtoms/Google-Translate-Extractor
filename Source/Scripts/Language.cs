@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using Extensions;
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace GTE
 {
-    internal class Language
+    public static class Language
     {
-        internal static ImmutableDictionary<string, string> Table { get; }
+        private static readonly ImmutableDictionary<string, string> m_codes;
 
         static Language()
         {
             // Retrieved language names and codes from https://gist.github.com/JT5D/a2fdfefa80124a06f5a9/8d448569000ebe6752c7aaac91054a6af8f31c5b
             // Most entries are untested and are likely invalid.
-            Table = ImmutableDictionary.CreateRange(new KeyValuePair<string, string>[]
+            m_codes = ImmutableDictionary.CreateRange(new KeyValuePair<string, string>[]
             {
                 KeyValuePair.Create("afrikaans", "af"),
                 KeyValuePair.Create("akan", "ak"),
@@ -158,6 +160,18 @@ namespace GTE
                 KeyValuePair.Create("yoruba", "yo"),
                 KeyValuePair.Create("zulu", "zu")
             });
+        }
+
+        public static bool TryGetCode(string language, out string code)
+        {
+            if (m_codes != null && m_codes.TryGetValue(language, out var iso))
+            {
+                code = iso;
+                return true;
+            }
+            ConsoleColor.Red.WriteLine($"Language: '{language}' is unsupported or was spelt incorrectly");
+            code = string.Empty;
+            return false;
         }
     }
 }

@@ -19,7 +19,9 @@ namespace GTE
                     var version = assembly.GetName().Version;
                     if (version != null)
                     {
-                        return version.ToString().Substring(2);
+                        string str = version.ToString();
+                        int end = str.LastIndexOf('.');
+                        return str.Substring(0, end);
                     }
                 }
                 return "N/A";
@@ -39,25 +41,56 @@ namespace GTE
             while (JSON.HasProcesses)
             {
             }
-            ConsoleColor.DarkGreen.WriteLine("Processed JSON Documents");
+            ConsoleColor.DarkGreen.WriteLine("Processed documents");
 
-            // Print all subtitles.
-            foreach (var sequenceGroup in JSON.Data)
+            // Sequence Groups:
+            foreach (var a in JSON.Data)
             {
-                ConsoleColor.Cyan.WriteLine(sequenceGroup.Key);
-                foreach (var sequence in sequenceGroup.Value)
+                string type = a.Key;
+                var sequences = a.Value;
+
+                // Sequence:
+                foreach (var b in sequences)
                 {
-                    ConsoleColor.DarkCyan.WriteLine("  " + sequence.Key);
-                    foreach (var variants in sequence.Value.Variants)
+                    string name = b.Key;
+                    var variants = b.Value.Variants;
+
+                    // ERROR:
+                    if (variants == null)
                     {
-                        var path = Path.Combine("Sounds", sequenceGroup.Key.ToTitleCase(), variants.Key.ToTitleCase());
-                        Directory.CreateDirectory(path);
-                        ConsoleColor.DarkYellow.WriteLine("    " + variants.Key);
-                        foreach (var subtitle in variants.Value)
+                        ConsoleColor.Red.WriteLine($"Sequence: '{name}' variants are invalid");
+                        continue;
+                    }
+
+                    // Sequence Variants:
+                    foreach (var c in variants)
+                    {
+                        string language = c.Key;
+                        string[] subtitles = c.Value;
+
+                        string path = Path.Combine("Sounds", type.ToTitleCase(), language.ToTitleCase());
+
+                        if (!Directory.Exists(path))
                         {
-                            var stream = Task.Run(async () => await Google.Request(variants.Key, subtitle));
-                            Write(stream.Result, Path.Combine(path, sequence.Key + ".mp3"));
-                            ConsoleColor.Gray.WriteLine("      " + subtitle);
+                            Directory.CreateDirectory(path);
+                        }
+
+                        // Sequence Variant Subtitles:
+                        for (int i = 0; i < subtitles.Length; i++)
+                        {
+                            // Save iterator as it will change while the task is running.
+                            int index = i;
+
+                            // Combine path and file name.
+                            string count = (index + 1).ToString("00");
+                            string filepath = Path.Combine(path, $"{name}_{count}.mp3");
+
+                            // Download each sequence variant subtitle.
+                            Task.Run(async () =>
+                            {
+                                var stream = await Google.Request(language, subtitles[index]);
+                                Write(stream, filepath);
+                            });
                         }
                     }
                 }
@@ -70,9 +103,10 @@ namespace GTE
         {
             string message = $"Google Translate Extractor (Version {Version}) by Adam Calvelage";
             ConsoleColor.Blue.WriteLine(message);
+            Console.WriteLine();
         }
 
-        public static async void Write(Stream stream, string filepath)
+        private static async void Write(Stream stream, string filepath)
         {
             string? path = Path.GetDirectoryName(filepath);
             string? name = Path.GetFileName(filepath);
@@ -89,7 +123,8 @@ namespace GTE
                 using (var file = new FileStream(filepath, FileMode.Create, FileAccess.Write))
                 {
                     await stream.CopyToAsync(file);
-                    ConsoleColor.DarkGreen.WriteLine($"Wrote '{name}' [{stream.Length} bytes]");
+                    await file.DisposeAsync();
+                    ConsoleColor.DarkCyan.WriteLine($"Wrote {stream.Length / 1000} KB -> '{filepath.Replace(@"Sounds\", "")}'");
                 }
             }
         }

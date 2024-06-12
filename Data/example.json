@@ -1,0 +1,32 @@
+{
+    "how_to_use": // Audio Prefix
+    {
+        "variants": // Language Variants
+        {
+            "english":
+            [
+                "'how_to_use' is an ID and all audio will be prefixed with that ID",
+                "'variants' is a constant for all audio definitions",
+                "'variants' can contain any language you want to support"
+            ],
+            "french":
+            [
+                "'how_to_use' est un identifiant et tous les fichiers audio seront préfixés par cet identifiant",
+                "'Les variantes' sont une constante pour toutes les définitions audio",
+                "'Les variantes' peuvent contenir n'importe quelle langue que vous souhaitez prendre en charge"
+            ],
+            "haitian creole":
+            [
+                "'how_to_use' se yon ID epi tout odyo yo pral prefiks ak ID sa a",
+                "'variants' se yon konstan pou tout definisyon odyo",
+                "'variante' ka genyen nenpòt lang ou vle sipòte"
+            ],
+            "spanish":
+            [
+                "'how_to_use' es un ID y todo el audio tendrá el prefijo ese ID",
+                "'variantes' es una constante para todas las definiciones de audio",
+                "'Las variantes' pueden contener cualquier idioma que desee admitir"
+            ]
+        }
+    }
+}

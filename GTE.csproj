@@ -8,7 +8,7 @@
     <Nullable>enable</Nullable>
     <Platforms>x64</Platforms>
     <StartupObject>GTE.Program</StartupObject>
-    <ApplicationIcon>Source\Assets\.ico</ApplicationIcon>
+    <ApplicationIcon>Assets\.ico</ApplicationIcon>
     <ProduceReferenceAssembly>False</ProduceReferenceAssembly>
     <Trimming>full</Trimming>
     <Title>$(AssemblyName)</Title>
@@ -24,9 +24,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Source\Assets\**" />
-    <EmbeddedResource Remove="Source\Assets\**" />
-    <None Remove="Source\Assets\**" />
+    <Compile Remove="Assets\**" />
+    <EmbeddedResource Remove="Assets\**" />
+    <None Remove="Assets\**" />
   </ItemGroup>
 
   <ItemGroup>

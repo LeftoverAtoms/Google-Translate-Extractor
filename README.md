@@ -1,13 +1,15 @@
 # Google Translate Extractor
 
-Created to generate placeholder audio for Unity, but can be used for whatever purpose you desire.
+This program utilizes JSON to quickly and easily generate TTS audio from [Google Translate](https://translate.google.com) that you may use for whatever purpose you desire.
 
 ## Usage
-
-- Specifiy what you want Google Translate to output with the [config file.](Config.json)
-    - Tip: Use commas or spaces in your Subtitles to add short or long pauses between words.
-- Running this program will send several file requests to [Google Translate](https://translate.google.com) and will download each of your prompts to your system.
+- Supported languages are located [here](https://github.com/LeftoverAtoms/Google-Translate-Extractor/blob/master/Scripts/Language.cs).
+    - Submit a pull request for incorrect or missing entries.
+- Define JSON files [here](Data/), you can have as many as you like.
+    - Audio files will be saved to a folder based on your JSON file names. 
+- Running this program will search through and briefly download audio using each JSON file.
+- Use commas or spaces to add short or long pauses.
 
 ## Preview
 
-<img src="Source/Assets/Console.png" alt="Preview Image" />
+<img src="Assets/Console.png" alt="Preview Image" />

@@ -41,7 +41,7 @@ namespace GTE
             while (JSON.HasProcesses)
             {
             }
-            ConsoleColor.DarkGreen.WriteLine("Processed documents");
+            ConsoleColor.DarkYellow.WriteLine("Processed documents");
 
             // Sequence Groups:
             foreach (var a in JSON.Data)
@@ -70,11 +70,6 @@ namespace GTE
 
                         string path = Path.Combine("Sounds", type.ToTitleCase(), language.ToTitleCase());
 
-                        if (!Directory.Exists(path))
-                        {
-                            Directory.CreateDirectory(path);
-                        }
-
                         // Sequence Variant Subtitles:
                         for (int i = 0; i < subtitles.Length; i++)
                         {
@@ -89,7 +84,10 @@ namespace GTE
                             Task.Run(async () =>
                             {
                                 var stream = await Google.Request(language, subtitles[index]);
-                                Write(stream, filepath);
+                                if (stream != null)
+                                {
+                                    Write(stream, filepath);
+                                }
                             });
                         }
                     }
@@ -102,7 +100,7 @@ namespace GTE
         private static void PrintAttributes()
         {
             string message = $"Google Translate Extractor (Version {Version}) by Adam Calvelage";
-            ConsoleColor.Blue.WriteLine(message);
+            ConsoleColor.DarkMagenta.WriteLine(message);
             Console.WriteLine();
         }
 

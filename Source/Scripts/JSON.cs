@@ -48,14 +48,14 @@ namespace GTE
 
             // Load JSON document.
             string document = await File.ReadAllTextAsync(filePath);
-            ConsoleColor.DarkYellow.WriteLine($"Loaded '{sequenceType}'");
+            ConsoleColor.DarkGreen.WriteLine($"Loaded '{sequenceType}'");
 
             // Deserialize JSON to structure.
             var sequenceGroup = JsonConvert.DeserializeObject<Dictionary<string, Sequence>>(document);
             if (sequenceGroup != null)
             {
                 Data.TryAdd(sequenceType, sequenceGroup);
-                ConsoleColor.DarkMagenta.WriteLine($"Deserialized '{sequenceType}'");
+                ConsoleColor.DarkGreen.WriteLine($"Deserialized '{sequenceType}'");
             }
 
             m_processes--;

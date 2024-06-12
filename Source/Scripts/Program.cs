@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace GTE
 {
@@ -49,11 +50,13 @@ namespace GTE
                     ConsoleColor.DarkCyan.WriteLine("  " + sequence.Key);
                     foreach (var variants in sequence.Value.Variants)
                     {
-                        var path = Path.Combine(sequenceGroup.Key.ToTitleCase(), variants.Key.ToTitleCase());
+                        var path = Path.Combine("Sounds", sequenceGroup.Key.ToTitleCase(), variants.Key.ToTitleCase());
                         Directory.CreateDirectory(path);
                         ConsoleColor.DarkYellow.WriteLine("    " + variants.Key);
                         foreach (var subtitle in variants.Value)
                         {
+                            var stream = Task.Run(async () => await Google.Request(variants.Key, subtitle));
+                            Write(stream.Result, Path.Combine(path, sequence.Key + ".mp3"));
                             ConsoleColor.Gray.WriteLine("      " + subtitle);
                         }
                     }

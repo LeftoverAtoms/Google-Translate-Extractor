@@ -5,7 +5,7 @@
     <TargetFramework>net8.0-windows</TargetFramework>
     <RootNamespace>GTE</RootNamespace>
     <ImplicitUsings>disable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <Platforms>x64</Platforms>
     <StartupObject>GTE.Program</StartupObject>
     <ApplicationIcon>Assets\.ico</ApplicationIcon>
@@ -13,7 +13,7 @@
     <Trimming>full</Trimming>
     <Title>$(AssemblyName)</Title>
     <Company>Adam Calvelage</Company>
-    <Version>3.0.0</Version>
+    <Version>3.1.0</Version>
     <SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
   </PropertyGroup>
 

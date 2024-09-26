@@ -1,0 +1,81 @@
+[
+    {
+        "name": "look_at_menu",
+        "lesson":
+        {
+            "enabled": true,
+            "replay": true,
+            "completion": 1,
+            "permissions": "None",
+            "waypoints":
+            [
+                "VRIntro",
+                "CuringTutorial",
+                "CuringFreeMode"
+            ]
+        },
+        "variants":
+        {
+            "english":
+            {
+                "subtitles":
+                [
+                    "find the game mode selection panel",
+                    "follow the arrows if you are lost"
+                ]
+            }
+        }
+    },
+    {
+        "name": "dojo_completed",
+        "lesson":
+        {
+            "enabled": true,
+            "replay": true,
+            "completion": 0,
+            "permissions": "None",
+            "waypoints":
+            [
+                "VRIntro",
+                "CuringTutorial",
+                "CuringFreeMode"
+            ]
+        },
+        "variants":
+        {
+            "english":
+            {
+                "subtitles":
+                [
+                    "you may enter the virtual reality dojo again or experience free mode"
+                ]
+            }
+        }
+    },
+    {
+        "name": "press_any_button",
+        "lesson":
+        {
+            "enabled": true,
+            "replay": true,
+            "completion": 0,
+            "permissions": "None",
+            "waypoints":
+            [
+                "VRIntro",
+                "CuringTutorial",
+                "CuringFreeMode"
+            ]
+        },
+        "variants":
+        {
+            "english":
+            {
+                "subtitles":
+                [
+                    "press any button on the panel to begin"
+                ]
+            }
+        }
+    }
+]

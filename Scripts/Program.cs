@@ -4,127 +4,107 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace GTE
+namespace GTE;
+
+internal static class Program
 {
-    internal static class Program
+    private static string AppData { get; } = Path.Combine(Directory.GetCurrentDirectory(), "Data");
+
+    private static void Main()
     {
-        private static string AppData { get; } = Path.Combine(Directory.GetCurrentDirectory(), "Data");
-        private static string Version
+        PrintAttributes();
+
+        foreach (string file in Directory.GetFiles(AppData, "*.json"))
         {
-            get
-            {
-                var assembly = Assembly.GetEntryAssembly();
-                if (assembly != null)
-                {
-                    var version = assembly.GetName().Version;
-                    if (version != null)
-                    {
-                        string str = version.ToString();
-                        int end = str.LastIndexOf('.');
-                        return str.Substring(0, end);
-                    }
-                }
-                return "N/A";
-            }
+            JSON.Deserialize(file);
         }
 
-        private static void Main()
+        // Wait until each document has been processed.
+        while (JSON.IsProcessing)
         {
-            PrintAttributes();
+            continue;
+        }
 
-            foreach (var file in Directory.GetFiles(AppData, "*.json"))
+        ConsoleColor.DarkYellow.WriteLine("Processed documents");
+
+        // Groups:
+        foreach (var (type, sequences) in JSON.Data)
+        {
+            // Sequences:
+            foreach (var sequence in sequences)
             {
-                JSON.Deserialize(file);
-            }
-
-            // Wait until application is done processing all documents.
-            while (JSON.HasProcesses)
-            {
-            }
-            ConsoleColor.DarkYellow.WriteLine("Processed documents");
-
-            // Sequence Groups:
-            foreach (var a in JSON.Data)
-            {
-                string type = a.Key;
-                var sequences = a.Value;
-
-                // Sequence:
-                foreach (var b in sequences)
+                // Variants:
+                foreach (var (language, variant) in sequence.Variants)
                 {
-                    string name = b.Key;
-                    var variants = b.Value.Variants;
+                    string path = Path.Combine("Sounds", type, language).ToTitleCase();
 
-                    // ERROR:
-                    if (variants == null)
+                    // Subtitles:
+                    for (int i = 0; i < variant.Subtitles.Length; i++)
                     {
-                        ConsoleColor.Red.WriteLine($"Sequence: '{name}' variants are invalid");
-                        continue;
-                    }
+                        // Combine path and file name.
+                        string count = (i + 1).ToString("00");
+                        string filePath = Path.Combine(path, $"{sequence.Name}_{count}.mp3");
 
-                    // Sequence Variants:
-                    foreach (var c in variants)
-                    {
-                        string language = c.Key;
-                        string[] subtitles = c.Value;
-
-                        string path = Path.Combine("Sounds", type.ToTitleCase(), language.ToTitleCase());
-
-                        // Sequence Variant Subtitles:
-                        for (int i = 0; i < subtitles.Length; i++)
-                        {
-                            // Save iterator as it will change while the task is running.
-                            int index = i;
-
-                            // Combine path and file name.
-                            string count = (index + 1).ToString("00");
-                            string filepath = Path.Combine(path, $"{name}_{count}.mp3");
-
-                            // Download each sequence variant subtitle.
-                            Task.Run(async () =>
-                            {
-                                var stream = await Google.Request(language, subtitles[index]);
-                                if (stream != null)
-                                {
-                                    Write(stream, filepath);
-                                }
-                            });
-                        }
+                        // Download each sequence variant subtitle.
+                        Task task = Google.Download(language, variant.Subtitles[i], filePath);
+                        Task.Run(async () => await task);
                     }
                 }
             }
-
-            Console.Read();
         }
 
-        private static void PrintAttributes()
+        Console.Read();
+    }
+
+    private static void PrintAttributes()
+    {
+        string message = $"Google Translate Extractor (Version {GetVersion()}) by Adam Calvelage";
+        ConsoleColor.White.WriteLine(message);
+        Console.WriteLine();
+    }
+
+    private static string GetVersion()
+    {
+        var assembly = Assembly.GetEntryAssembly();
+        if (assembly == null)
         {
-            string message = $"Google Translate Extractor (Version {Version}) by Adam Calvelage";
-            ConsoleColor.DarkMagenta.WriteLine(message);
-            Console.WriteLine();
+            return "N/A";
         }
 
-        private static async void Write(Stream stream, string filepath)
+        var version = assembly.GetName().Version;
+        if (version == null)
         {
-            string? path = Path.GetDirectoryName(filepath);
-            string? name = Path.GetFileName(filepath);
+            return "N/A";
+        }
 
-            if (path != null && name != null)
-            {
-                // Create missing directory.
-                if (!Directory.Exists(path))
-                {
-                    Directory.CreateDirectory(path);
-                }
+        string str = version.ToString();
+        int end = str.LastIndexOf('.');
+        return str.Substring(0, end);
+    }
 
-                // Write stream to file.
-                using (var file = new FileStream(filepath, FileMode.Create, FileAccess.Write))
-                {
-                    await stream.CopyToAsync(file);
-                    await file.DisposeAsync();
-                    ConsoleColor.DarkCyan.WriteLine($"Wrote {stream.Length / 1000} KB -> '{filepath.Replace(@"Sounds\", "")}'");
-                }
-            }
+    public static async void Write(Stream stream, string filePath)
+    {
+        string path = Path.GetDirectoryName(filePath);
+        string name = Path.GetFileName(filePath);
+
+        if (path == null || null == name)
+        {
+            return;
+        }
+
+        // Create missing directory.
+        bool hasPath = Directory.Exists(path);
+        if (!hasPath)
+        {
+            Directory.CreateDirectory(path);
+        }
+
+        // Write stream to file.
+        using (var file = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        {
+            await stream.CopyToAsync(file);
+            await file.DisposeAsync();
+            ConsoleColor.DarkCyan.WriteLine($"Wrote {stream.Length / 1000} KB -> ..\\{filePath}");
         }
     }
 }

@@ -5,83 +5,40 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 
-namespace GTE
+namespace GTE;
+
+public static class JSON
 {
-    public static class JSON
+    public static ConcurrentDictionary<string, List<Sequence>> Data { get; }
+
+    public static bool IsProcessing { get => s_processes != 0; }
+
+    private static int s_processes;
+
+    static JSON()
     {
-        // Sequence Type -> Sequence Group -> Sequence
-        public static ConcurrentDictionary<string, Dictionary<string, Sequence>> Data { get; }
+        Data = new ConcurrentDictionary<string, List<Sequence>>();
+    }
 
-        public static bool HasProcesses => (m_processes != 0);
+    public static async void Deserialize(string filePath)
+    {
+        s_processes++;
 
-        private static int m_processes;
+        // Use file name to categorize sequences into groups.
+        string type = Path.GetFileNameWithoutExtension(filePath);
 
-        static JSON()
+        // Load JSON document.
+        string document = await File.ReadAllTextAsync(filePath);
+        ConsoleColor.DarkGreen.WriteLine($"Loaded '{type}'");
+
+        // Deserialize JSON to structure.
+        var group = JsonConvert.DeserializeObject<List<Sequence>>(document);
+        if (group != null)
         {
-            Data = new ConcurrentDictionary<string, Dictionary<string, Sequence>>();
+            Data.TryAdd(type, group);
+            ConsoleColor.DarkGreen.WriteLine($"Deserialized '{type}'");
         }
 
-        public class Sequence
-        {
-            // Language -> Subtitles
-            public Dictionary<string, string[]>? Variants { get; init; }
-
-            //public bool TryGetVariant(string language, out string[] subtitles)
-            //{
-            //    if (Variants != null && Variants.TryGetValue(language, out var sub))
-            //    {
-            //        subtitles = sub;
-            //        return true;
-            //    }
-            //    ConsoleColor.Red.WriteLine($"Sequence Variant: '{language}' is undefined or invalid!");
-            //    subtitles = [];
-            //    return false;
-            //}
-        }
-
-        public static async void Deserialize(string filePath)
-        {
-            m_processes++;
-
-            // Use file name to categorize sequences into groups.
-            string sequenceType = Path.GetFileNameWithoutExtension(filePath);
-
-            // Load JSON document.
-            string document = await File.ReadAllTextAsync(filePath);
-            ConsoleColor.DarkGreen.WriteLine($"Loaded '{sequenceType}'");
-
-            // Deserialize JSON to structure.
-            var sequenceGroup = JsonConvert.DeserializeObject<Dictionary<string, Sequence>>(document);
-            if (sequenceGroup != null)
-            {
-                Data.TryAdd(sequenceType, sequenceGroup);
-                ConsoleColor.DarkGreen.WriteLine($"Deserialized '{sequenceType}'");
-            }
-
-            m_processes--;
-        }
-
-        //public static bool TryGetSequenceGroup(string type, out Dictionary<string, Sequence> sequenceGroup)
-        //{
-        //    if (Data != null && Data.TryGetValue(type, out var group))
-        //    {
-        //        sequenceGroup = group;
-        //        return true;
-        //    }
-        //    ConsoleColor.Red.WriteLine($"Sequence Group: '{type}' is undefined!");
-        //    sequenceGroup = [];
-        //    return false;
-        //}
-        //public static bool TryGetSequence(string type, string name, out Sequence sequence)
-        //{
-        //    if (TryGetSequenceGroup(type, out var sequenceGroup) && sequenceGroup.TryGetValue(name, out var seq))
-        //    {
-        //        sequence = seq;
-        //        return true;
-        //    }
-        //    ConsoleColor.Red.WriteLine($"Sequence: '{name}' is undefined!");
-        //    sequence = new Sequence();
-        //    return false;
-        //}
+        s_processes--;
     }
 }
